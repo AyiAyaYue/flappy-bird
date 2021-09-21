@@ -4,7 +4,7 @@ let myScore;
 
 function startGame() {
     myGameArea.start(); //  make a gaming area
-    myGamePiece  = new component(30, 30, "red", 10, 120); //make a component
+    myGamePiece  = new component(30, 30, "img/giphy.gif", 10, 120, 'image'); //make a component
     //myObstacle = new component(10, 200, "green", 300, 120); //make a obstacle
     myScore = new component("30px", "Consolas", "black", 280, 40, "text");
 }
@@ -29,25 +29,50 @@ let myGameArea = {
 
 function component(width, height, color, x, y, type) {
     this.type = type;
+    if (type == 'image'){
+        this.image = new Image();
+        this.image.src = color;
+    }
     this.width = width;
     this.height = height;
     this.speedX = 0;
     this.speedY = 0;
     this.x = x;
     this.y = y;
+    this.gravity = 0.05;
+    this.gravitySpeed = 0;
     this.update = function() {
         ctx = myGameArea.context;
-        if (this.type == 'text') {
+        
+        if (type == 'text') {
             ctx.font = this.width + " " + this.height;
             ctx.fillStyle = color;
             ctx.fillText(this.text, this.x, this.y);
-        } else {ctx.fillStyle = color;
+        } else {
+            ctx.fillStyle = color;
             ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+
+        if (type == 'image') {
+            ctx.drawImage(
+                this.image,
+                this.x,
+                this.y,
+                this.width, 
+                this.height);
         }
     }
     this.newPos = function() {
+        this.gravitySpeed += this.gravity;
         this.x += this.speedX;
-        this.y += this.speedY;
+        this.y += this.speedY + this.gravitySpeed;
+        this.hitBottom();
+    }
+    this.hitBottom = function() {
+        let rockBottom = myGameArea.canvas.height - this.height;
+        if (this.y >  rockBottom) {
+            this.y = rockBottom;
+        }
     }
     this.crashWith = function(otherobj) {
         let myLeft = this.x;
@@ -114,18 +139,25 @@ function everyinterval(n){
 }
 
 //create keyboard controller
-window.addEventListener('keydown', function(event) {
-    if (event.defaultPrevented) {
+window.addEventListener('keydown', fly);
+window.addEventListener('keyup', flyDown);
+
+function fly(e) {
+    if (e.defaultPrevented) {
         return;
     }
 
-    if (event.code === "ArrowDown"){
-        myGamePiece.speedY += 1;
-    } else if (event.code === "ArrowUp"){
-        myGamePiece.speedY -= 1;
-    } else if (event.code === "ArrowLeft"){
-        myGamePiece.speedX -= 1;
-    } else if (event.code === "ArrowRight"){
-        myGamePiece.speedX += 1;
+    if (e.code === "Space"){
+        myGamePiece.gravity = -0.2;
+    } 
+}
+
+function flyDown(e) {
+    if (e.defaultPrevented) {
+        return;
     }
-})
+
+    if (e.code === "Space"){
+        myGamePiece.gravity = 0.05;
+    } 
+}
