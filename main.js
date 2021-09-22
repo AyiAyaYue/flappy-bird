@@ -11,13 +11,11 @@ function startGame() {
 let game = {
     canvas: document.createElement('canvas'),
     start: function() {
-        this.canvas.width = 480;
-        this.canvas.height  = 270;
+        this.canvas.width = 480; //window.innerWidth
+        this.canvas.height  = 270; //window.innerHeight
         this.context = this.canvas.getContext('2d');
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0; //counting frames
-
-
         // this.interval = setInterval(updateGameArea, 20);  //update the display every 20th millisecond (50 times persecond)
         requestAnimationFrame(updateGameArea);
     },
@@ -102,7 +100,7 @@ function component(width, height, color, x, y, type) {
 
 let currentTime = performance.now();
 
-function updateGameArea() { //the component is now drawn and clear 50 times per sec
+function updateGameArea() { 
     requestAnimationFrame(updateGameArea);
 
     const newTime = performance.now();
@@ -137,16 +135,6 @@ function updateGameArea() { //the component is now drawn and clear 50 times per 
     score.update();
     player.newPos(dt);    
     player.update();
-
-    /* if (player.crashWith(obstacle)) {
-        game.stop();                      //if it hits the obstacle, game stop
-    }  else {
-        game.clear();
-        obstacle.x += -1;
-        obstacle.update();
-        player.newPos();
-        player.update();                   // else do something
-    } */
 }
 
 //a method for execute something at a given frame rate.
